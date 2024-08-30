@@ -1,5 +1,35 @@
 <script setup name="login">
 import login_img from "@/assets/image/login.png";
+import { reactive } from "vue";
+import axios from "axios";
+
+let form=reactive({
+    email:'',
+    password:''
+})
+
+const OnSubmit =()=>{
+    let pwdRgx = /^[0-9a-zA-Z_-]{6,20}/
+    let emailRgx = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9])+/
+    if (!(emailRgx.test(form.email))){
+        alert('email form incorrect')
+        return;
+    }
+    if (!(pwdRgx.test(form.password))){
+        alert('password form incorrect')
+        return;
+    }
+
+    axios.post("http://127.0.0.1:8000/auth/login", {
+        email:form.email,
+        password:form.password
+    }).then((res)=>{
+        console.log(res);
+    }).catch((err)=>{
+        console.log(err);
+    })
+
+}
 </script>
 
 <template>
@@ -18,7 +48,8 @@ import login_img from "@/assets/image/login.png";
               class="input100"
               type="text"
               name="email"
-              placeholder="邮箱"
+              placeholder="email"
+              v-model="form.email"
             />
             <span class="focus-input100"></span>
             <span class="symbol-input100">
@@ -31,7 +62,8 @@ import login_img from "@/assets/image/login.png";
               class="input100"
               type="password"
               name="password"
-              placeholder="密码"
+              placeholder="password"
+              v-model="form.password"
             />
             <span class="focus-input100"></span>
             <span class="symbol-input100">
@@ -40,7 +72,7 @@ import login_img from "@/assets/image/login.png";
           </div>
 
           <div class="container-login100-form-btn">
-            <button class="login100-form-btn">登陆</button>
+            <button class="login100-form-btn" @click="OnSubmit">Login</button>
           </div>
         </div>
       </div>
