@@ -2,6 +2,12 @@
 import login_img from "@/assets/image/login.png";
 import { reactive } from "vue";
 import axios from "axios";
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
+
+
+const authStore = useAuthStore()
+const router = useRouter()
 
 let form=reactive({
     email:'',
@@ -24,7 +30,12 @@ const OnSubmit =()=>{
         email:form.email,
         password:form.password
     }).then((res)=>{
-        console.log(res);
+        let data=res.data;
+        let token = data.token;
+        let user=data.user;
+        authStore.setUserToken(user,token)
+        router.push({name:"frame"})
+
     }).catch((err)=>{
         console.log(err);
     })
