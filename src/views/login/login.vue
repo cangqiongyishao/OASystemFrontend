@@ -1,48 +1,70 @@
 <script setup name="login">
 import login_img from "@/assets/image/login.png";
 import { reactive } from "vue";
-import axios from "axios";
+import authHttp from "@/api/authHttp";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
 
+const authStore = useAuthStore();
+const router = useRouter();
 
-const authStore = useAuthStore()
-const router = useRouter()
+let form = reactive({
+  email: "",
+  password: "",
+});
 
-let form=reactive({
-    email:'',
-    password:''
-})
+const OnSubmit = async () => {
+  let pwdRgx = /^[0-9a-zA-Z_-]{6,20}/;
+  let emailRgx = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9])+/;
+  if (!emailRgx.test(form.email)) {
+    // alert("email form incorrect");
+    ElMessage.info('email form incorrect')
+    return;
+  }
+  if (!pwdRgx.test(form.password)) {
+    // alert("password form incorrect");
+    ElMessage.info('password form incorrect')
+    return;
+  }
 
-const OnSubmit =()=>{
-    let pwdRgx = /^[0-9a-zA-Z_-]{6,20}/
-    let emailRgx = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9])+/
-    if (!(emailRgx.test(form.email))){
-        alert('email form incorrect')
-        return;
-    }
-    if (!(pwdRgx.test(form.password))){
-        alert('password form incorrect')
-        return;
-    }
+  // axios.post("http://127.0.0.1:8000/auth/login", {
+  //     email:form.email,
+  //     password:form.password
+  // }).then((res)=>{
+  //     let data=res.data;
+  //     let token = data.token;
+  //     let user=data.user;
+  //     authStore.setUserToken(user,token)
+  //     router.push({name:"frame"})
 
-    axios.post("http://127.0.0.1:8000/auth/login", {
-        email:form.email,
-        password:form.password
-    }).then((res)=>{
-        let data=res.data;
-        let token = data.token;
-        let user=data.user;
-        authStore.setUserToken(user,token)
-        router.push({name:"frame"})
+  // }).catch((err)=>{
+  //     console.log(err);
+  // })
 
-    }).catch((err)=>{
-        console.log(err);
-    })
-
-}
+  // authHttp.login(form.email, form.password).then((res) => {
+  //   let data = res.data;
+  //   let token = data.token;
+  //   let user = data.user;
+  //   authStore.setUserToken(user, token);
+  //   router.push({ name: "frame" });
+  // }).catch((err)=>{
+  //   let detail=err.response.data.detail;
+  //   alert(detail);
+  // })
+  try {
+    let data = await authHttp.login(form.email, form.password);
+    let token = data.token;
+    let user = data.user;
+    authStore.setUserToken(user, token);
+    router.push({ name: "frame" });
+  } catch(detail) {
+    // alert(detail);
+    ElMessage.error(detail)
+  }
+};
 </script>
-
+ 
 <template>
   <div class="dowebok">
     <div class="container-login100">
@@ -52,7 +74,7 @@ const OnSubmit =()=>{
         </div>
 
         <div class="login100-form validate-form">
-          <span class="login100-form-title"> 员工登陆 </span>
+          <span class="login100-form-title"> employee login </span>
 
           <div class="wrap-input100 validate-input">
             <input
