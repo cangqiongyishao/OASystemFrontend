@@ -1,15 +1,28 @@
-<script setup name="frame"></script>
+<script setup name="frame">
+import {ref,computed} from "vue"
+
+let isCollapse=ref(false);
+
+let asideWidth=computed(()=>{
+  if(isCollapse.value){
+    return "64px"
+  }else{
+    return "250px"
+  }
+})
+</script>
 
 <template>
   <el-container class="container">
-    <el-aside class="aside" width="250px">
-      <Router-link to="/" class="brand">XiaoOASystem</Router-link>
+    <el-aside class="aside" width="asideWidth">
+      <Router-link to="/" class="brand"><strong>Xiao</strong><span v-show="!isCollapse">OASystem</span></Router-link>
       <el-menu
         active-text-color="#ffd04b"
         background-color="#343a40"
         class="el-menu-vertical-demo"
         default-active="1"
         text-color="#fff"
+        :collapse="isCollapse"
       >
         <el-menu-item index="1">
           <el-icon><HomeFilled /></el-icon>
