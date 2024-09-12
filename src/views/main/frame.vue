@@ -1,5 +1,15 @@
 <script setup name="frame">
 import {ref,computed} from "vue"
+import {
+  Fold,
+  Check,
+  Delete,
+  Edit,
+  Expand,
+  Message,
+  Search,
+  Star,
+} from '@element-plus/icons-vue'
 
 let isCollapse=ref(false);
 
@@ -10,6 +20,11 @@ let asideWidth=computed(()=>{
     return "250px"
   }
 })
+
+const OnCollapsAside=()=>{
+  isCollapse.value=!isCollapse.value
+}
+
 </script>
 
 <template>
@@ -23,6 +38,7 @@ let asideWidth=computed(()=>{
         default-active="1"
         text-color="#fff"
         :collapse="isCollapse"
+        :collapse-transition="false"
       >
         <el-menu-item index="1">
           <el-icon><HomeFilled /></el-icon>
@@ -75,7 +91,10 @@ let asideWidth=computed(()=>{
       </el-menu>
     </el-aside>
     <el-container>
-      <el-header class="header">Header</el-header>
+      <el-header class="header">
+        <el-button v-show="isCollapse" :icon="Expand" @click="OnCollapsAside" />
+        <el-button v-show="!isCollapse" :icon="Fold" @click="OnCollapsAside"/>
+      </el-header>
       <el-main class="main">Main</el-main>
     </el-container>
   </el-container>
