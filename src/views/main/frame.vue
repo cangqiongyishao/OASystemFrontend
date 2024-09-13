@@ -1,5 +1,5 @@
 <script setup name="frame">
-import {ref,computed} from "vue"
+import { ref, computed } from "vue";
 import {
   Fold,
   Check,
@@ -9,28 +9,30 @@ import {
   Message,
   Search,
   Star,
-} from '@element-plus/icons-vue'
+} from "@element-plus/icons-vue";
 
-let isCollapse=ref(false);
+let isCollapse = ref(false);
 
-let asideWidth=computed(()=>{
-  if(isCollapse.value){
-    return "64px"
-  }else{
-    return "250px"
+let asideWidth = computed(() => {
+  if (isCollapse.value) {
+    return "64px";
+  } else {
+    return "250px";
   }
-})
+});
 
-const OnCollapsAside=()=>{
-  isCollapse.value=!isCollapse.value
-}
-
+const OnCollapsAside = () => {
+  isCollapse.value = !isCollapse.value;
+};
 </script>
 
 <template>
   <el-container class="container">
     <el-aside class="aside" width="asideWidth">
-      <Router-link to="/" class="brand"><strong>Xiao</strong><span v-show="!isCollapse">OASystem</span></Router-link>
+      <Router-link to="/" class="brand"
+        ><strong>Xiao</strong
+        ><span v-show="!isCollapse">OASystem</span></Router-link
+      >
       <el-menu
         active-text-color="#ffd04b"
         background-color="#343a40"
@@ -92,8 +94,33 @@ const OnCollapsAside=()=>{
     </el-aside>
     <el-container>
       <el-header class="header">
-        <el-button v-show="isCollapse" :icon="Expand" @click="OnCollapsAside" />
-        <el-button v-show="!isCollapse" :icon="Fold" @click="OnCollapsAside"/>
+        <div class="left-header">
+          <el-button
+            v-show="isCollapse"
+            :icon="Expand"
+            @click="OnCollapsAside"
+          />
+          <el-button
+            v-show="!isCollapse"
+            :icon="Fold"
+            @click="OnCollapsAside"
+          />
+        </div>
+        <el-dropdown>
+          <span class="el-dropdown-link">
+            <el-avatar :size="30" icon="UserFilled" />
+            <span style="margin-left: 10px;">Xiao</span>
+            <el-icon class="el-icon--right">
+              <arrow-down />
+            </el-icon>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item>Change Password</el-dropdown-item>
+              <el-dropdown-item divided>Logout</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </el-header>
       <el-main class="main">Main</el-main>
     </el-container>
@@ -127,7 +154,17 @@ const OnCollapsAside=()=>{
   height: 60px;
   background-color: #fff;
   border-bottom: 1px solid #e6e6e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
+
+.el-dropdown-link {
+  display: flex;
+  align-items: center;
+}
+
+
 
 .el-menu {
   border-right: None;
