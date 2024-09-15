@@ -11,6 +11,10 @@ import {
   Star,
 } from "@element-plus/icons-vue";
 
+import { useAuthStore } from "@/stores/auth";
+
+const authstore=useAuthStore()
+
 let isCollapse = ref(false);
 
 let asideWidth = computed(() => {

@@ -18,8 +18,12 @@ export const useAuthStore = defineStore('auth', () => {
 
   let user=computed(()=>{
 
-    if (!_user.value){
-        _user.value=localStorage.getItem(USER_KEY)
+    if (Object.keys(_user.value)==0){
+        let user_str=localStorage.getItem(USER_KEY)
+        if (user_str){
+        _user.value=JSON.parse(user_str)
+        }
+        
     }
     return _user.value;
   })
