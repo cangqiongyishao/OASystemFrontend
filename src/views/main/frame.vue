@@ -12,8 +12,10 @@ import {
 } from "@element-plus/icons-vue";
 
 import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
 
 const authstore=useAuthStore()
+const router=useRouter()
 
 let isCollapse = ref(false);
 
@@ -28,14 +30,18 @@ let asideWidth = computed(() => {
 const OnCollapsAside = () => {
   isCollapse.value = !isCollapse.value;
 };
+const OnExit=()=>{
+  authstore.clearUserToken()
+  router.push({name:'login'})
+}
 </script>
 
 <template>
   <el-container class="container">
     <el-aside class="aside" width="asideWidth">
-      <Router-link to="/" class="brand"
+      <router-link to="/" class="brand"
         ><strong>Xiao</strong
-        ><span v-show="!isCollapse">OASystem</span></Router-link
+        ><span v-show="!isCollapse">OASystem</span></router-link
       >
       <el-menu
         active-text-color="#ffd04b"
@@ -113,7 +119,7 @@ const OnCollapsAside = () => {
         <el-dropdown>
           <span class="el-dropdown-link">
             <el-avatar :size="30" icon="UserFilled" />
-            <span style="margin-left: 10px;">Xiao</span>
+            <span style="margin-left: 10px;"> {{ authstore.user.realname }}</span>
             <el-icon class="el-icon--right">
               <arrow-down />
             </el-icon>
@@ -121,7 +127,7 @@ const OnCollapsAside = () => {
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item>Change Password</el-dropdown-item>
-              <el-dropdown-item divided>Logout</el-dropdown-item>
+              <el-dropdown-item divided @click="OnExit">Logout</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>

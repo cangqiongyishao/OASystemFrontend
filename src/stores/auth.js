@@ -16,6 +16,13 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem(TOKEN_KEY,token)
   }
 
+  function clearUserToken(){
+    _user.value={}
+    _token.value=""
+    localStorage.removeItem(USER_KEY)
+    localStorage.removeItem(TOKEN_KEY)
+  }
+
   let user=computed(()=>{
 
     if (Object.keys(_user.value),length==0){
@@ -50,5 +57,5 @@ let is_logined=computed(()=>{
 })
 
 
-  return { setUserToken, user, token,is_logined}
+  return { setUserToken, user, token,is_logined,clearUserToken}
 })
