@@ -18,7 +18,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   let user=computed(()=>{
 
-    if (Object.keys(_user.value)==0){
+    if (Object.keys(_user.value),length==0){
         let user_str=localStorage.getItem(USER_KEY)
         if (user_str){
         _user.value=JSON.parse(user_str)
@@ -30,12 +30,25 @@ export const useAuthStore = defineStore('auth', () => {
 
 
 let token=computed(()=>{
-    if (! _token.value){
-        _token.value=localStorage.getItem(TOKEN_KEY)
+    if (!_token.value){
+      let token_str=localStorage.getItem(TOKEN_KEY)
+      if(token_str){
+        _token.value=token_str
+      }
+        
     }
     return _token.value;
 })
 
+let is_logined=computed(()=>{
+  console.log('user.value:', user.value)
+  console.log('token.value:', token.value)
+  if (Object.keys(user.value).length>0 && token.value){
+    return true;
+  }
+  return false;
+})
 
-  return { setUserToken, user, token}
+
+  return { setUserToken, user, token,is_logined}
 })
