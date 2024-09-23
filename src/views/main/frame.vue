@@ -13,6 +13,8 @@ import {
 
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
+import authHttp from "@/api/authHttp";
+import { ElMessage } from "element-plus";
 
 const authstore = useAuthStore();
 const router = useRouter();
@@ -67,11 +69,17 @@ const onControlResetpwdDialog =()=>{
 }
 
 const onSubmit=()=>{
-  formTag.value.validate((valid,fields)=>{
+  formTag.value.validate(async (valid,fields) =>{
     if(valid){
-      console.log('Field validation successful')
+      try{
+        await authHttp.resetPwd(resetPwdForm.oldpwd,resetPwdForm.pwd1,resetPwdForm.pwd2)
+        ElMessage.success('Password change correct')
+        dialogVisible.value=false
+      }catch(detail){
+        ElMessage.error(detail)
+      }
     }else{
-      console.log('Field validation failure')
+      ElMessage.info('Please enter the correct fields')
     }
     console.log(fields)
   })
