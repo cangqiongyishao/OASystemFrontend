@@ -1,5 +1,5 @@
 <script setup name="frame">
-import { ref, computed } from "vue";
+import { ref, computed,reactive } from "vue";
 import {
   Fold,
   Check,
@@ -14,10 +14,34 @@ import {
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 
-const authstore=useAuthStore()
-const router=useRouter()
+const authstore = useAuthStore();
+const router = useRouter();
 
 let isCollapse = ref(false);
+let dialogVisible=ref(false);
+let formLabelWidth ="140px"
+let resetPwdForm=reactive({
+  oldpwd:'',
+  pwd1:'',
+  pwd2:''
+})
+
+let formTag=ref()
+
+let rules=reactive({
+  oldpwd: [
+    { required: true, message: 'Please input old password', trigger: 'blur' },
+    { min: 6, max: 20, message: 'Length should be 6 to 20', trigger: 'blur' },
+  ],
+  pwd1:[
+    { required: true, message: 'Please input new password', trigger: 'blur' },
+    { min: 6, max: 20, message: 'Length should be 6 to 20', trigger: 'blur' },
+  ],
+  pwd2:[
+    { required: true, message: 'Please confirm new password', trigger: 'blur' },
+    { min: 6, max: 20, message: 'Length should be 6 to 20', trigger: 'blur' },
+  ]
+})
 
 let asideWidth = computed(() => {
   if (isCollapse.value) {
@@ -30,9 +54,28 @@ let asideWidth = computed(() => {
 const OnCollapsAside = () => {
   isCollapse.value = !isCollapse.value;
 };
-const OnExit=()=>{
-  authstore.clearUserToken()
-  router.push({name:'login'})
+const OnExit = () => {
+  authstore.clearUserToken();
+  router.push({ name: "login" });
+};
+
+const onControlResetpwdDialog =()=>{
+  resetPwdForm.oldpwd=""
+  resetPwdForm.pwd1=""
+  resetPwdForm.pwd2=""
+  dialogVisible.value=true
+}
+
+const onSubmit=()=>{
+  formTag.value.validate((valid,fields)=>{
+    if(valid){
+      console.log('Field validation successful')
+    }else{
+      console.log('Field validation failure')
+    }
+    console.log(fields)
+  })
+  console.log('click submit')
 }
 </script>
 
@@ -119,15 +162,19 @@ const OnExit=()=>{
         <el-dropdown>
           <span class="el-dropdown-link">
             <el-avatar :size="30" icon="UserFilled" />
-            <span style="margin-left: 10px;"> {{ authstore.user.realname }}</span>
+            <span style="margin-left: 10px">
+              {{ authstore.user.realname }}</span
+            >
             <el-icon class="el-icon--right">
               <arrow-down />
             </el-icon>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>Change Password</el-dropdown-item>
-              <el-dropdown-item divided @click="OnExit">Logout</el-dropdown-item>
+              <el-dropdown-item @click="onControlResetpwdDialog">Change Password</el-dropdown-item>
+              <el-dropdown-item divided @click="OnExit"
+                >Logout</el-dropdown-item
+              >
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -135,6 +182,29 @@ const OnExit=()=>{
       <el-main class="main">Main</el-main>
     </el-container>
   </el-container>
+  <el-dialog v-model="dialogVisible" title="change password" width="500">
+    <el-form :model="resetPwdForm" :rules="rules" ref="formTag">
+      <el-form-item label="old password" :label-width="formLabelWidth" prop="oldpwd">
+        <el-input v-model="resetPwdForm.oldpwd" autocomplete="off" type="password" />
+      </el-form-item>
+
+      <el-form-item label="new password" :label-width="formLabelWidth" prop="pwd1">
+        <el-input v-model="resetPwdForm.pwd1" autocomplete="off" type="password" />
+      </el-form-item>
+
+      <el-form-item label="confirm password" :label-width="formLabelWidth" prop="pwd2">
+        <el-input v-model="resetPwdForm.pwd2" autocomplete="off" type="password" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="dialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="onSubmit">
+          Confirm
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <style scoped>
@@ -173,8 +243,6 @@ const OnExit=()=>{
   display: flex;
   align-items: center;
 }
-
-
 
 .el-menu {
   border-right: None;
