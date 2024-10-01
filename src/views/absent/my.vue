@@ -1,0 +1,112 @@
+<script setup name="myabsent">
+import OAPageHeader from "@/components/OAPageHeader.vue";
+import { ref, reactive } from "vue";
+
+let formLabelWidth = "100px";
+let dialogFormVisible = ref(false);
+
+let absent_form = reactive({
+  title: "",
+  absent_type_id: null,
+  date_range: [],
+  request_content: "",
+});
+
+let absent_form_ref=ref()
+let rules = reactive({
+  title: [
+    { required: true, message: "Please enter the title", trigger: "blur" },
+  ],
+  absent_type_id: [
+    { required: true, message: "Please choice absent type", trigger: "change" },
+  ],
+  date_range: [
+    { required: true, message: "Please choice absent time", trigger: "blur" },
+  ],
+  request_content: [
+    { required: true, message: "Please type absent reason", trigger: "blur" },
+  ]
+});
+let absent_types = ref([]);
+
+const OnShowDialog = () => {
+  absent_form.title = "";
+  absent_form.absent_type_id = null;
+  absent_form.date_range = [];
+  absent_form.request_content = "";
+  dialogFormVisible.value = true;
+};
+
+const OnSubmitAbsent =()=>{
+    console.log(absent_form);
+    
+}
+</script>
+
+<template>
+  <el-space direction="vertical" fill :size="20" style="width: 100%">
+    <OAPageHeader content="Personal Absents"></OAPageHeader>
+    <el-card style="text-align: right">
+      <el-button type="primary" @click="OnShowDialog">
+        <el-icon><Plus /></el-icon>New Absent</el-button
+      >
+    </el-card>
+  </el-space>
+
+  <el-dialog v-model="dialogFormVisible" title="new absent" width="500">
+    <el-form :model="absent_form" :rules="rules" ref="absent_form_ref">
+      <el-form-item label="Title" :label-width="formLabelWidth" prop="title">
+        <el-input v-model="absent_form.title" autocomplete="off" />
+      </el-form-item>
+      <el-form-item label="Absent Type" :label-width="formLabelWidth" prop="absent_type_id">
+        <el-select
+          v-model="absent_form.absent_type_id"
+          placeholder="Please select an absent type"
+        >
+          <el-option
+            v-for="item in absen_types"
+            :label="item.name"
+            :value="item.id"
+            :key="item.name"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="Absent Time" :label-width="formLabelWidth" prop="date_range">
+        <el-date-picker
+          v-model="absent_form.date_range"
+          type="daterange"
+          range-separator="To"
+          start-placeholder="Start date"
+          end-placeholder="End date"
+        />
+      </el-form-item>
+
+      <el-form-item label="Responder" :label-width="formLabelWidth">
+        <el-input
+          value="[dongdong@qq.com]dongdong"
+          readonly
+          disabled
+          autocomplete="off"
+        />
+      </el-form-item>
+
+      <el-form-item label="Reason for absent" :label-width="formLabelWidth" prop="request_content">
+        <el-input
+          type="textarea"
+          v-model="absent_form.request_content"
+          autocomplete="off"
+        />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="OnSubmitAbsent">
+          Confirm
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
+</template>
+
+<style lang="scss" scoped></style>

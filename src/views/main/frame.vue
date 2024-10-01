@@ -95,6 +95,7 @@ const onSubmit=()=>{
         ><span v-show="!isCollapse">OASystem</span></router-link
       >
       <el-menu
+       :router="true" 
         active-text-color="#ffd04b"
         background-color="#343a40"
         class="el-menu-vertical-demo"
@@ -110,15 +111,15 @@ const onSubmit=()=>{
         <el-sub-menu index="2">
           <template #title>
             <el-icon><Checked /></el-icon>
-            <span>Attendance Management</span>
+            <span>Absent Management</span>
           </template>
-          <el-menu-item index="2-1">
+          <el-menu-item index="2-1" :route="{name:'myabsent'}">
             <el-icon><UserFilled /></el-icon>
-            <span>Personal Attendance</span>
+            <span>Personal Absent</span>
           </el-menu-item>
-          <el-menu-item index="2-2">
+          <el-menu-item index="2-2" :route="{name:'subabsent'}">
             <el-icon><User /></el-icon>
-            <span>Subordinate Attendance</span>
+            <span>Subordinate Absent</span>
           </el-menu-item>
         </el-sub-menu>
 
@@ -187,7 +188,7 @@ const onSubmit=()=>{
           </template>
         </el-dropdown>
       </el-header>
-      <el-main class="main">Main</el-main>
+      <el-main class="main"><RouterView></RouterView></el-main>
     </el-container>
   </el-container>
   <el-dialog v-model="dialogVisible" title="change password" width="500">
