@@ -14,7 +14,7 @@ let absent_form = reactive({
   request_content: "",
 });
 
-let absent_form_ref=ref()
+let absent_form_ref = ref();
 let rules = reactive({
   title: [
     { required: true, message: "Please enter the title", trigger: "blur" },
@@ -27,22 +27,21 @@ let rules = reactive({
   ],
   request_content: [
     { required: true, message: "Please type absent reason", trigger: "blur" },
-  ]
+  ],
 });
 let absent_types = ref([]);
-let responder=reactive({
-    email:'',
-    realname:''
+let responder = reactive({
+  email: "",
+  realname: "",
+});
 
-})
-
-let responder_str=computed(()=>{
-    if (responder.email){
-        return '['+responder.email+']'+responder.realname
-    }else{
-        return 'Null'
-    }
-})
+let responder_str = computed(() => {
+  if (responder.email) {
+    return "[" + responder.email + "]" + responder.realname;
+  } else {
+    return "Null";
+  }
+});
 
 const OnShowDialog = () => {
   absent_form.title = "";
@@ -52,23 +51,38 @@ const OnShowDialog = () => {
   dialogFormVisible.value = true;
 };
 
-const OnSubmitAbsent =()=>{
-    console.log(absent_form);
-
-}
-
-onMounted(async()=>{
-    try{
-        let absent_types_data=await absentHttp.getAbsentTypes()
-        absent_types.value=absent_types_data
-
-        let responder_data= await absentHttp.getResponder()
-        Object.assign(responder,responder_data)
-
-    }catch(detail){
-        ElMessage.error(detail)
+const OnSubmitAbsent = () => {
+  absent_form_ref.value.validate(async (valid, fields) => {
+    if (valid) {
+      let data = {
+        title: absent_form.title,
+        absent_type_id: absent_form.absent_type_id,
+        start_date: absent_form.date_range[0],
+        end_date: absent_form.date_range[1],
+        request_content: absent_form.request_content,
+      };
+      try {
+        let absent = await absentHttp.applyAbsent(data);
+        dialogFormVisible.value = false;
+        console.log(absent);
+      } catch (detail) {
+        ElMessage.error(detail);
+      }
     }
-})
+  });
+};
+
+onMounted(async () => {
+  try {
+    let absent_types_data = await absentHttp.getAbsentTypes();
+    absent_types.value = absent_types_data;
+
+    let responder_data = await absentHttp.getResponder();
+    Object.assign(responder, responder_data);
+  } catch (detail) {
+    ElMessage.error(detail);
+  }
+});
 </script>
 
 <template>
@@ -86,7 +100,11 @@ onMounted(async()=>{
       <el-form-item label="Title" :label-width="formLabelWidth" prop="title">
         <el-input v-model="absent_form.title" autocomplete="off" />
       </el-form-item>
-      <el-form-item label="Absent Type" :label-width="formLabelWidth" prop="absent_type_id">
+      <el-form-item
+        label="Absent Type"
+        :label-width="formLabelWidth"
+        prop="absent_type_id"
+      >
         <el-select
           v-model="absent_form.absent_type_id"
           placeholder="Please select an absent type"
@@ -99,7 +117,11 @@ onMounted(async()=>{
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="Absent Time" :label-width="formLabelWidth" prop="date_range">
+      <el-form-item
+        label="Absent Time"
+        :label-width="formLabelWidth"
+        prop="date_range"
+      >
         <el-date-picker
           v-model="absent_form.date_range"
           type="daterange"
@@ -110,15 +132,14 @@ onMounted(async()=>{
       </el-form-item>
 
       <el-form-item label="Responder" :label-width="formLabelWidth">
-        <el-input
-          :value="responder_str"
-          readonly
-          disabled
-          autocomplete="off"
-        />
+        <el-input :value="responder_str" readonly disabled autocomplete="off" />
       </el-form-item>
 
-      <el-form-item label="Reason for absent" :label-width="formLabelWidth" prop="request_content">
+      <el-form-item
+        label="Reason for absent"
+        :label-width="formLabelWidth"
+        prop="request_content"
+      >
         <el-input
           type="textarea"
           v-model="absent_form.request_content"
@@ -129,9 +150,7 @@ onMounted(async()=>{
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="dialogFormVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="OnSubmitAbsent">
-          Confirm
-        </el-button>
+        <el-button type="primary" @click="OnSubmitAbsent"> Confirm </el-button>
       </div>
     </template>
   </el-dialog>
