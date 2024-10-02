@@ -1,6 +1,8 @@
 <script setup name="myabsent">
 import OAPageHeader from "@/components/OAPageHeader.vue";
-import { ref, reactive } from "vue";
+import absentHttp from "@/api/absentHttp";
+import { ref, reactive, onMounted, computed } from "vue";
+import { ElMessage } from "element-plus";
 
 let formLabelWidth = "100px";
 let dialogFormVisible = ref(false);
@@ -28,6 +30,19 @@ let rules = reactive({
   ]
 });
 let absent_types = ref([]);
+let responder=reactive({
+    email:'',
+    realname:''
+
+})
+
+let responder_str=computed(()=>{
+    if (responder.email){
+        return '['+responder.email+']'+responder.realname
+    }else{
+        return 'Null'
+    }
+})
 
 const OnShowDialog = () => {
   absent_form.title = "";
@@ -39,8 +54,21 @@ const OnShowDialog = () => {
 
 const OnSubmitAbsent =()=>{
     console.log(absent_form);
-    
+
 }
+
+onMounted(async()=>{
+    try{
+        let absent_types_data=await absentHttp.getAbsentTypes()
+        absent_types.value=absent_types_data
+
+        let responder_data= await absentHttp.getResponder()
+        Object.assign(responder,responder_data)
+
+    }catch(detail){
+        ElMessage.error(detail)
+    }
+})
 </script>
 
 <template>
@@ -64,7 +92,7 @@ const OnSubmitAbsent =()=>{
           placeholder="Please select an absent type"
         >
           <el-option
-            v-for="item in absen_types"
+            v-for="item in absent_types"
             :label="item.name"
             :value="item.id"
             :key="item.name"
@@ -83,7 +111,7 @@ const OnSubmitAbsent =()=>{
 
       <el-form-item label="Responder" :label-width="formLabelWidth">
         <el-input
-          value="[dongdong@qq.com]dongdong"
+          :value="responder_str"
           readonly
           disabled
           autocomplete="off"
