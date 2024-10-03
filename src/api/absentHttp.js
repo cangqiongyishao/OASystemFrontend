@@ -16,8 +16,14 @@ const applyAbsent=(data)=>{
     return http.post(path,data)
 }
 
+const getMyAbsents =(page=1)=>{
+    const path='/absent/absent?who=my&page='+page
+    return http.get(path)
+}
+
 export default{
     getAbsentTypes,
     getResponder,
-    applyAbsent
+    applyAbsent,
+    getMyAbsents
 }

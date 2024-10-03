@@ -79,6 +79,9 @@ onMounted(async () => {
 
     let responder_data = await absentHttp.getResponder();
     Object.assign(responder, responder_data);
+
+    let absents_data= await absentHttp.getMyAbsents()
+    
   } catch (detail) {
     ElMessage.error(detail);
   }
