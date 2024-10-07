@@ -3,6 +3,7 @@ import OAPageHeader from "@/components/OAPageHeader.vue";
 import absentHttp from "@/api/absentHttp";
 import { ref, reactive, onMounted, computed } from "vue";
 import { ElMessage } from "element-plus";
+import timeFormatter from "@/utils/timeFormatter";
 
 let formLabelWidth = "100px";
 let dialogFormVisible = ref(false);
@@ -29,6 +30,7 @@ let rules = reactive({
     { required: true, message: "Please type absent reason", trigger: "blur" },
   ],
 });
+let absents = ref([]);
 let absent_types = ref([]);
 let responder = reactive({
   email: "",
@@ -80,8 +82,9 @@ onMounted(async () => {
     let responder_data = await absentHttp.getResponder();
     Object.assign(responder, responder_data);
 
-    let absents_data= await absentHttp.getMyAbsents()
-    
+    let absents_data = await absentHttp.getMyAbsents();
+    absents.value = absents_data;
+    console.log(absents.value);
   } catch (detail) {
     ElMessage.error(detail);
   }
@@ -95,6 +98,42 @@ onMounted(async () => {
       <el-button type="primary" @click="OnShowDialog">
         <el-icon><Plus /></el-icon>New Absent</el-button
       >
+    </el-card>
+    <el-card>
+      <el-table :data="absents" style="width: 100%">
+        <el-table-column prop="title" label="Title"  />
+        <el-table-column prop="absent_type.name" label="Style"  />
+        <el-table-column prop="request_content" label="Reason" />
+        <el-table-column label="Create Time"> 
+            <template #default="scope">
+                {{ timeFormatter.stringFromDateTime(scope.row.create_time) }}
+            </template>
+        </el-table-column>
+
+        <el-table-column label="Start Date"> 
+            <template #default="scope">
+                {{ timeFormatter.stringFromDate(scope.row.start_date) }}
+            </template>
+        </el-table-column>
+
+        <el-table-column label="End Date"> 
+            <template #default="scope">
+                {{ timeFormatter.stringFromDate(scope.row.end_date) }}
+            </template>
+        </el-table-column>
+
+        <el-table-column label="Responder">
+            {{ responder_str }}
+        </el-table-column>
+        <el-table-column prop="response_content" label="Response Content"/>
+        <el-table-column  label="Response Content">
+            <template #default="scope">
+                <el-tag type="info" v-if="scope.row.status==1">Auditing</el-tag>
+                <el-tag type="success" v-else-if="scope.row.status==2">Pass</el-tag>
+                <el-tag type="danger" v-else>Reject</el-tag>
+            </template>
+        </el-table-column>
+      </el-table>
     </el-card>
   </el-space>
 
