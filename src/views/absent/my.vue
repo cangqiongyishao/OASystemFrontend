@@ -145,7 +145,7 @@ onMounted(async () => {
           {{ responder_str }}
         </el-table-column>
         <el-table-column prop="response_content" label="Response Content" />
-        <el-table-column label="Response Content">
+        <el-table-column label="Review Status">
           <template #default="scope">
             <el-tag type="info" v-if="scope.row.status == 1">Auditing</el-tag>
             <el-tag type="success" v-else-if="scope.row.status == 2"
