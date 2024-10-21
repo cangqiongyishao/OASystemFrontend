@@ -4,7 +4,8 @@ import absentHttp from "@/api/absentHttp";
 import { ref, reactive, onMounted, computed,watch } from "vue";
 import { ElMessage } from "element-plus";
 import timeFormatter from "@/utils/timeFormatter";
-
+import OAMain from "@/components/OAMain.vue";
+import OAPagination from "@/components/OAPagination.vue";
 let formLabelWidth = "100px";
 let dialogFormVisible = ref(false);
 
@@ -111,13 +112,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <el-space direction="vertical" fill :size="20" style="width: 100%">
-    <OAPageHeader content="Personal Absents"></OAPageHeader>
+  <OAMain title="Personal Absent">
     <el-card style="text-align: right">
       <el-button type="primary" @click="OnShowDialog">
         <el-icon><Plus /></el-icon>New Absent</el-button
       >
     </el-card>
+
     <el-card>
       <el-table :data="absents" style="width: 100%">
         <el-table-column prop="title" label="Title" />
@@ -156,15 +157,22 @@ onMounted(async () => {
         </el-table-column>
       </el-table>
       <template #footer>
-        <el-pagination
+        <!-- <el-pagination
           background
           layout="prev, pager, next"
           :page-size="10"
           :total="pagination.total"
           v-model:current-page="pagination.page"
-        />
+        /> -->
+        <OAPagination v-model="pagination.page" :total="pagination.total"></OAPagination>
       </template>
     </el-card>
+
+  </OAMain>
+  <el-space direction="vertical" fill :size="20" style="width: 100%">
+    
+
+
   </el-space>
 
   <el-dialog v-model="dialogFormVisible" title="new absent" width="500">
@@ -229,11 +237,7 @@ onMounted(async () => {
 </template>
 
 <style  scoped>
-.el-pagination{
-    justify-content: center;
-}
 
-.el-space :deep(.el-space__item)  {
-    width: 100%;
-}
+
+
 </style>

@@ -4,6 +4,8 @@ import absentHttp from "@/api/absentHttp";
 import { ref, reactive, onMounted } from "vue";
 import { ElMessage } from "element-plus";
 import timeFormatter from "@/utils/timeFormatter";
+import OAMain from "@/components/OAMain.vue";
+import OAPagination from "@/components/OAPagination.vue";
 
 let absents = ref([]);
 let pagination = reactive({
@@ -13,9 +15,7 @@ let pagination = reactive({
 </script>
 
 <template>
-  <el-space direction="vertical" fill :size="20" style="width: 100%">
-    <OAPageHeader content="Sub Absents"></OAPageHeader>
-
+  <OAMain title="Sub Absents">
     <el-card>
       <el-table :data="absents" style="width: 100%">
         <el-table-column prop="title" label="Title" />
@@ -62,16 +62,18 @@ let pagination = reactive({
         </el-table-column>
       </el-table>
       <template #footer>
-        <el-pagination
+        <!-- <el-pagination
           background
           layout="prev, pager, next"
           :page-size="10"
           :total="pagination.total"
           v-model:current-page="pagination.page"
-        />
+        /> -->
+        <OAPagination v-model="pagination.page" :total="pagination.total"></OAPagination>
       </template>
     </el-card>
-  </el-space>
+  </OAMain>
+
 </template>
 
 <style scoped>
@@ -79,7 +81,4 @@ let pagination = reactive({
     justify-content: center;
 }
 
-.el-space :deep(.el-space__item)  {
-    width: 100%;
-}
 </style>
