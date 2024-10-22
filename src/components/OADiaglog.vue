@@ -35,7 +35,7 @@ const onSubmit=()=>{
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="onCancel">Cancel</el-button>
-        <el-button type="primary" @click="OnSubmit"> Confirm </el-button>
+        <el-button type="primary" @click="onSubmit"> Confirm </el-button>
       </div>
     </template>
   </el-dialog>
