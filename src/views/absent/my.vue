@@ -6,6 +6,8 @@ import { ElMessage } from "element-plus";
 import timeFormatter from "@/utils/timeFormatter";
 import OAMain from "@/components/OAMain.vue";
 import OAPagination from "@/components/OAPagination.vue";
+import OADiaglog from "@/components/OADiaglog.vue";
+
 let formLabelWidth = "100px";
 let dialogFormVisible = ref(false);
 
@@ -169,13 +171,9 @@ onMounted(async () => {
     </el-card>
 
   </OAMain>
-  <el-space direction="vertical" fill :size="20" style="width: 100%">
-    
 
+  <OADiaglog title="New absent" v-model="dialogFormVisible" @submit="OnSubmitAbsent">
 
-  </el-space>
-
-  <el-dialog v-model="dialogFormVisible" title="new absent" width="500">
     <el-form :model="absent_form" :rules="rules" ref="absent_form_ref">
       <el-form-item label="Title" :label-width="formLabelWidth" prop="title">
         <el-input v-model="absent_form.title" autocomplete="off" />
@@ -227,13 +225,8 @@ onMounted(async () => {
         />
       </el-form-item>
     </el-form>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="OnSubmitAbsent"> Confirm </el-button>
-      </div>
-    </template>
-  </el-dialog>
+  </OADiaglog>
+
 </template>
 
 <style  scoped>
