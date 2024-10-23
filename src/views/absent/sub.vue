@@ -26,15 +26,16 @@ let rules = reactive({
     {
       required: true,
       message: "Please select process result",
-      triger: "change",
+      trigger: "change",
     },
   ],
   response_content: [
-    { required: true, message: "please type reason", triger: "blur" },
+    { required: true, message: "please type reason", trigger: "blur" },
   ],
 });
 
 let absent_form_ref = ref({});
+let handleIndex=null
 
 onMounted(async () => {
   try {
@@ -46,16 +47,35 @@ onMounted(async () => {
   }
 });
 
-const onShowDialog = () => {
+const onShowDialog = (index) => {
+  absentForm.status=2;
+  absentForm.response_content="";
   dialogVisible.value = true;
+  handleIndex=index
 };
+
+const onSubmitAbsent=()=>{
+  absent_form_ref.value.validate(async(valid,fields)=>{
+    if(valid){
+      try{
+        dialogVisible.value=false
+        const absent=absents.value[handleIndex]
+        const data=await absentHttp.handleSubAbsent(absent.id,absentForm.status,absentForm.response_content)
+        absents.value.splice(handleIndex,1,data)
+        ElMessage.success('Sub absent process success')
+      }catch(detail){
+        ElMessage.error(detail)
+            }
+    }
+  })
+}
 </script>
 
 <template>
   <OADiaglog
     title="Manage Attendance"
     v-model="dialogVisible"
-    @click="onsubmitAbsent"
+    @click="onSubmitAbsent"
   >
     <el-form
       :model="absentForm"
@@ -72,7 +92,7 @@ const onShowDialog = () => {
       <el-form-item label="Reason" prop="response_content">
         <el-input
           type="textarea"
-          v-model="absentForm.request_content"
+          v-model="absentForm.response_content"
           autocomplete="off"
         />
       </el-form-item>
@@ -82,8 +102,13 @@ const onShowDialog = () => {
     <el-card>
       <el-table :data="absents" style="width: 100%">
         <el-table-column prop="title" label="Title" />
+        <el-table-column label="requester">
+          <template #default="scope">
+            {{ '['+scope.row.requester.department.name+']'+scope.row.requester.realname }}
+          </template>
+        </el-table-column>
         <el-table-column prop="absent_type.name" label="Style" />
-        <el-table-column prop="request_content" label="Reason" />
+        <el-table-column prop="response_content" label="Reason" />
         <el-table-column label="Create Time">
           <template #default="scope">
             {{ timeFormatter.stringFromDateTime(scope.row.create_time) }}
@@ -117,7 +142,7 @@ const onShowDialog = () => {
           <template #default="scope">
             <el-button
               v-if="scope.row.status == 1"
-              @click="onShowDialog"
+              @click="onShowDialog(scope.$index)"
               type="primary"
               icon="EditPen"
             />

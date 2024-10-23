@@ -90,7 +90,8 @@ const OnSubmitAbsent = () => {
       try {
         let absent = await absentHttp.applyAbsent(data);
         dialogFormVisible.value = false;
-        absents.value.unshift(absent)
+        absents.value.unshift(absent);
+        ElMessage.success('New absent created')
       } catch (detail) {
         ElMessage.error(detail);
       }
