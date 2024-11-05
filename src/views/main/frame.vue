@@ -128,11 +128,11 @@ const onSubmit=()=>{
             <el-icon><BellFilled /></el-icon>
             <span>Notification Management</span>
           </template>
-          <el-menu-item index="3-1">
+          <el-menu-item index="3-1" :route="{name:'inform_publish'}">
             <el-icon><CirclePlusFilled /></el-icon>
             <span>Publish Notification</span>
           </el-menu-item>
-          <el-menu-item index="3-2">
+          <el-menu-item index="3-2" :route="{name:'inform_list'}">
             <el-icon><List /></el-icon>
             <span>Notification List</span>
           </el-menu-item>
