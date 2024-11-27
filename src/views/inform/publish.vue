@@ -1,6 +1,8 @@
 <script setup name="publishinform">
+import '@wangeditor/editor/dist/css/style.css';
 import OAMain from "@/components/OAMain.vue";
-import { ref, reactive, onMounted, computed, watch } from "vue";
+import { ref, reactive, onMounted, onBeforeUnmount, shallowRef } from "vue";
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 
 let informForm = reactive({
     title: "",
@@ -20,6 +22,33 @@ const rules = reactive({
 
 let formRef = ref();
 let formLabelWidth = "100px";
+let departments = ref([])
+
+//wang setup
+const editorRef = shallowRef()
+
+const toolbarConfig = {}
+const editorConfig = { placeholder: 'Type here...' }
+let mode="default"
+
+// Timely destroy `editor` before vue component destroy.
+onBeforeUnmount(() => {
+    const editor = editorRef.value
+    if (editor == null) return
+    editor.destroy()
+})
+
+const handleCreated = (editor) => {
+    editorRef.value = editor // record editor instance
+}
+
+const onSubmit=()=>{
+    formRef.value.validate((valid,fields) =>{
+        if(valid){
+            console.log(informForm);
+        }
+    })
+}
 </script>
 
 <template>
@@ -28,22 +57,26 @@ let formLabelWidth = "100px";
             <el-form-item label="Title" :label-width="formLabelWidth" prop="title">
                 <el-input v-model="informForm.title" autocomplete="off" />
             </el-form-item>
-            <el-form-item label="Visible to the department" :label-width="formLabelWidth" prop="department_ids">
-                <el-select v-model="informForm.department_ids">
-                    <el-option v-for="item in absent_types" :label="item.name" :value="item.id" :key="item.name" />
+            <el-form-item label="Visible" :label-width="formLabelWidth" prop="department_ids">
+                <el-select multiple v-model="informForm.department_ids">
+                    <el-option :value="0" label="All departments"></el-option>
+                    <el-option v-for="department in departments" :label="department.name" :value="department.id"
+                        :key="department.name" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="Absent Time" :label-width="formLabelWidth" prop="date_range">
-                <el-date-picker v-model="absent_form.date_range" type="daterange" range-separator="To"
-                    start-placeholder="Start date" end-placeholder="End date" />
+            <el-form-item label="Content" :label-width="formLabelWidth" prop="content">
+                <div style="border: 1px solid #ccc; width: 100%">
+                    <Toolbar style="border-bottom: 1px solid #ccc" :editor="editorRef" :defaultConfig="toolbarConfig"
+                        :mode="mode" />
+                    <Editor style="height: 500px; overflow-y: hidden;" v-model="informForm.content" :defaultConfig="editorConfig"
+                        :mode="mode" @onCreated="handleCreated" />
+                </div>
             </el-form-item>
-
-            <el-form-item label="Responder" :label-width="formLabelWidth">
-                <el-input :value="responder_str" readonly disabled autocomplete="off" />
-            </el-form-item>
-
-            <el-form-item label="Reason for absent" :label-width="formLabelWidth" prop="request_content">
-                <el-input type="textarea" v-model="absent_form.request_content" autocomplete="off" />
+            <el-form-item >
+                <div style="text-align: right; flex: 1;">
+                 <el-button type="primary" @click="onSubmit">Submit</el-button>   
+                </div>
+                
             </el-form-item>
         </el-form>
     </OAMain>
