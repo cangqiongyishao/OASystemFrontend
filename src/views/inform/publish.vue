@@ -3,6 +3,8 @@ import '@wangeditor/editor/dist/css/style.css';
 import OAMain from "@/components/OAMain.vue";
 import { ref, reactive, onMounted, onBeforeUnmount, shallowRef } from "vue";
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import staffHttp from '@/api/staffHttp';
+import { ElMessage } from "element-plus";
 
 let informForm = reactive({
     title: "",
@@ -42,6 +44,15 @@ const handleCreated = (editor) => {
     editorRef.value = editor // record editor instance
 }
 
+onMounted(async()=>{
+    try{
+        let data=await staffHttp.getAllDepartment()
+        departments.value=data.results
+    }catch(detail){
+        ElMessage.error(detail)
+    }
+})
+
 const onSubmit=()=>{
     formRef.value.validate((valid,fields) =>{
         if(valid){
@@ -53,7 +64,8 @@ const onSubmit=()=>{
 
 <template>
     <OAMain title="Publish Notification">
-        <el-form :model="informForm" :rules="rules" ref="formRef">
+        <el-card>
+            <el-form :model="informForm" :rules="rules" ref="formRef">
             <el-form-item label="Title" :label-width="formLabelWidth" prop="title">
                 <el-input v-model="informForm.title" autocomplete="off" />
             </el-form-item>
@@ -79,6 +91,7 @@ const onSubmit=()=>{
                 
             </el-form-item>
         </el-form>
+        </el-card>
     </OAMain>
 </template>
 
